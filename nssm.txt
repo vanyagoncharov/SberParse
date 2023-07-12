@@ -1,0 +1,6 @@
+nssm.exe install ServiceParse "C:\PythonProject\SberParsing\startParse.bat"
+
+nssm.exe set ServiceParse AppStdout "C:\PythonProject\SberParsing\logs\stdout.log"
+nssm.exe set ServiceParse AppStderr "C:\PythonProject\SberParsing\logs\stderr.log"
+
+nssm.exe start ServiceParse
