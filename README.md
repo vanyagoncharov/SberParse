@@ -8,8 +8,8 @@
 nssm.exe install ServiceParse "C:\PythonProject\SberParsing\startParse.bat"
 
 Включение логов
-nssm.exe set ServiceParse AppStdout "C:\PythonProject\SberParsing\logs\stdout.log"
-nssm.exe set ServiceParse AppStderr "C:\PythonProject\SberParsing\logs\stderr.log"
+nssm.exe set ServiceParse AppStdout "C:\PythonProject\SberParsing\logs\stdout.log" - оповещения
+nssm.exe set ServiceParse AppStderr "C:\PythonProject\SberParsing\logs\stderr.log" - ошибки
 
 Старт службы
 nssm.exe start ServiceParse
