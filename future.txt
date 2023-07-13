@@ -1,0 +1,9 @@
+    # Проверяем, есть ли у пользователя запись в файле с идентификаторами пользователей
+    with open('users.txt', 'r') as f:
+        users = f.read().split('\n')
+        if str(message.chat.id) not in users:
+            # Если пользователя нет в файле, добавляем его и отправляем сообщение со списком доступных команд
+            users.append(str(message.chat.id))
+            with open('users.txt', 'w') as f:
+                f.write('\n'.join(users))
+            bot.send_message(message.chat.id, "Привет! Я бот. Вот список доступных команд:\n/command1 - Описание команды 1\n/command2 - Описание команды 2")

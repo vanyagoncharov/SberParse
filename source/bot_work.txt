@@ -1,0 +1,99 @@
+import telebot
+from telebot import types
+
+class TelegramBot:
+    def __init__(self, token):
+        self.bot = telebot.TeleBot(token)
+        self.commands = ['/start']
+        self.products = {}
+        self.states = {}
+
+    def start(self):
+        @self.bot.message_handler(commands=['start'])
+        def handle_start(message):
+            # Создаем клавиатуру с кнопками
+            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            button1 = types.KeyboardButton('Начать парсинг')
+            button2 = types.KeyboardButton('Остановить парсинг')
+            button3 = types.KeyboardButton('Информация')
+            keyboard.add(button1, button2, button3)
+
+            # Отправляем сообщение с клавиатурой
+            self.bot.send_message(message.chat.id, 'Выберите действие:', reply_markup=keyboard)
+
+        @self.bot.message_handler(func=lambda message: message.text == 'Начать парсинг')
+        def handle_start_parsing(message):
+            # Создаем клавиатуру с кнопками
+            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            button1 = types.KeyboardButton('Я.Маркет')
+            button2 = types.KeyboardButton('Озон')
+            button3 = types.KeyboardButton('Сбермегамаркет')
+            keyboard.add(button1, button2, button3)
+
+            # Отправляем сообщение с запросом выбора магазина
+            self.bot.send_message(message.chat.id, 'Выберите магазин:', reply_markup=keyboard)
+
+            # Устанавливаем состояние пользователя в "ожидание магазина"
+            self.states[message.chat.id] = 'wait_for_store'
+
+        @self.bot.message_handler(func=lambda message: self.states.get(message.chat.id) == 'wait_for_store')
+        def handle_store_selection(message):
+            # Сохраняем выбранный магазин в словаре
+            store_name = message.text
+            self.products[message.chat.id] = {'store': store_name}
+
+            # Запрашиваем ссылку на товар
+            self.bot.send_message(message.chat.id, 'Введите ссылку на товар:')
+
+            # Устанавливаем состояние пользователя в "ожидание ссылки"
+            self.states[message.chat.id] = 'wait_for_link'
+
+        @self.bot.message_handler(func=lambda message: self.states.get(message.chat.id) == 'wait_for_link')
+        def handle_product_link(message):
+            # Сохраняем ссылку на товар в словаре
+            product_link = message.text
+            self.products[message.chat.id]['link'] = product_link
+
+            # Создаем клавиатуру с кнопками
+            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            button1 = types.KeyboardButton('Да')
+            button2 = types.KeyboardButton('Нет')
+            keyboard.add(button1, button2)
+
+            # Отправляем сообщение с запросом подтверждения
+            self.bot.send_message(message.chat.id, f'Вы ввели ссылку: {product_link}, верно?', reply_markup=keyboard)
+
+            # Устанавливаем состояние пользователя в "ожидание подтверждения"
+            self.states[message.chat.id] = 'wait_for_confirmation'
+
+        @self.bot.message_handler(func=lambda message: self.states.get(message.chat.id) == 'wait_for_confirmation')
+        def handle_confirm_link(message):
+            # Проверяем подтверждение
+            if message.text == 'Да':
+                # Отправляем сообщение о сохранении ссылки
+                self.bot.send_message(message.chat.id, 'Ссылка на товар сохранена')
+
+                # Сбрасываем состояние пользователя
+                self.states[message.chat.id] = None
+            elif message.text == 'Нет':
+                # Запрашиваем ссылку на товар заново
+                self.bot.send_message(message.chat.id, 'Введите ссылку на товар заново')
+
+                # Устанавливаем состояние пользователя в "ожидание ссылки"
+                self.states[message.chat.id] = 'wait_for_link'
+
+        @self.bot.message_handler(func=lambda message: message.text == 'Информация')
+        def handle_info(message):
+            # Отправляем сообщение с информацией
+            self.bot.send_message(message.chat.id, 'Рассылка остановилась')
+
+        @self.bot.message_handler(func=lambda message: message.text == 'Остановить парсинг')
+        def handle_stop_parsing(message):
+            # Отправляем сообщение с информацией
+            self.bot.send_message(message.chat.id, 'Бот делает рассылку по изменению цен на выбранный товар')
+
+        self.bot.polling(none_stop=True)
+
+bot = TelegramBot("6303995867:AAH8Bq5pfu7RDW8YZ5Y7DJg0DwgiruClu0A")
+bot.start()
+
