@@ -78,7 +78,7 @@ def handle_stop(message):
 @bot.message_handler(commands=['menu'])    
 def handle_menu(message):
     """Обработчик команды /menu, который отображает главное меню"""
-    telebot_instance.store_menu(message)
+    telebot_instance.main_menu(message)
 
 
 @bot.message_handler(func=lambda message: message.text in ["Начать парсинг", "Остановить парсинг", "Информация", "Вывести все ссылки", "Скрыть меню"])
@@ -156,4 +156,4 @@ def process_confirmation_step(message, link, market):
     else:
         bot.send_message(message.chat.id, "Выберите 'Да' или 'Нет'")
         telebot_instance.confirm_menu(message, link)
-        bot.register_next_step_handler(message, process_confirmation_step, link)
+        bot.register_next_step_handler(message, process_confirmation_step, link, market)

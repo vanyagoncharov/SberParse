@@ -110,4 +110,6 @@ def get_settings_driver():
 
     service = webdriver.chrome.service.Service()
     driver = webdriver.Chrome(service=service, options=chrome_options)
+
+    return driver
     

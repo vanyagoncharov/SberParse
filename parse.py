@@ -1,6 +1,9 @@
 import datetime as dt
 import json
 import os
+import time
+
+import schedule
 import parse_helpers
 
 from bs4 import BeautifulSoup
@@ -95,7 +98,14 @@ def parse():
 
 def start_parse():
      
-     parse()
+     # Задаем расписание выполнения задачи раз в час
+     schedule.every().hour.do(parse)
+
+     # Бесконечный цикл, который выполняет код каждый час
+     while True:
+          schedule.run_pending()
+          time.sleep(60 * 30)
+     
 
 if __name__ == "__main__":
     start_parse()
