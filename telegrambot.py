@@ -3,11 +3,11 @@ import telebot
 import parse_helpers
 from telebot import types
 
-
 API_TOKEN = "6303995867:AAH8Bq5pfu7RDW8YZ5Y7DJg0DwgiruClu0A"
 
 bot = telebot.TeleBot(API_TOKEN)
 is_bot_running = False
+
 
 class TeleBot:
     def __init__(self):
@@ -65,23 +65,28 @@ def handle_start(message):
         bot.send_message(message.chat.id, "Бот уже запущен!")
         telebot_instance.main_menu(message)
 
-@bot.message_handler(commands=['stop'])    
+
+@bot.message_handler(commands=['stop'])
 def handle_stop(message):
     """Обработчик команды /stop, который будет останавливать парсинга сайта"""
-    global is_bot_running  
+    global is_bot_running
     if is_bot_running:
-        bot.send_message(message.chat.id, "Бот остановлен! Для старта бота введите '/start'", reply_markup=types.ReplyKeyboardRemove())
+        bot.send_message(message.chat.id, "Бот остановлен! Для старта бота введите '/start'",
+                         reply_markup=types.ReplyKeyboardRemove())
         is_bot_running = False
     else:
         bot.send_message(message.chat.id, "Бот уже остановлен!")
 
-@bot.message_handler(commands=['menu'])    
+
+@bot.message_handler(commands=['menu'])
 def handle_menu(message):
     """Обработчик команды /menu, который отображает главное меню"""
     telebot_instance.main_menu(message)
 
 
-@bot.message_handler(func=lambda message: message.text in ["Начать парсинг", "Остановить парсинг", "Информация", "Вывести все ссылки", "Скрыть меню"])
+@bot.message_handler(
+    func=lambda message: message.text in ["Начать парсинг", "Остановить парсинг", "Информация", "Вывести все ссылки",
+                                          "Скрыть меню"])
 def handle_main_menu(message):
     """Обработчик сообщений из главного меню, который в зависимости от выбора пользователя вызывает соответствующий
     метод"""
@@ -101,7 +106,8 @@ def handle_main_menu(message):
         else:
             bot.send_message(message.chat.id, "Список ссылок к парсингу пустой!")
     elif message.text == "Скрыть меню":
-        bot.send_message(message.chat.id, text="Клавиатура скрыта. Для отображения клавиатуры введите команду /menu", reply_markup=types.ReplyKeyboardRemove())
+        bot.send_message(message.chat.id, text="Клавиатура скрыта. Для отображения клавиатуры введите команду /menu",
+                         reply_markup=types.ReplyKeyboardRemove())
     else:
         bot.send_message(message.chat.id, "Бот делает рассылку по изменению цен на выбранный товар")
 
